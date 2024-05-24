@@ -6,11 +6,16 @@ import { CreateTaskDto } from './dto/create-task.dto';
 @Injectable()
 export class TaskService {
   private tasks: ITask[] = [];
+
   getTasks(): ITask[] {
     return this.tasks;
   }
+
   getTaskById(id: number): ITask {
     const task = this.tasks.find((t) => t.id === +id);
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
     return task;
   }
 
@@ -20,6 +25,7 @@ export class TaskService {
 
     return newTask;
   }
+
   deleteTask(id: number): ITask {
     const taskIndex = this.tasks.findIndex((t) => t.id === +id);
     if (taskIndex === -1) {
@@ -34,9 +40,6 @@ export class TaskService {
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
-
-    // this.tasks[taskIndex].title = title;
-    // return this.tasks[taskIndex];
 
     const updatedTask = this.tasks[taskIndex];
     updatedTask.title = title;
