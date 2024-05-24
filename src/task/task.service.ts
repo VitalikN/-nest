@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ITask } from './task.interface';
+import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Injectable()
 export class TaskService {
-  private tasks: ITask[] = [
-    { id: 1, title: 'Task 1' },
-    { id: 2, title: 'Task 2' },
-  ];
+  private tasks: ITask[] = [];
   getTasks(): ITask[] {
     return this.tasks;
   }
@@ -14,9 +13,12 @@ export class TaskService {
     const task = this.tasks.find((t) => t.id === +id);
     return task;
   }
-  createTask(task: ITask): ITask {
-    this.tasks.push(task);
-    return task;
+
+  createTask({ title, text, tags, status }: CreateTaskDto): ITask {
+    const newTask = new Task(title, text, tags, status);
+    this.tasks.push(newTask);
+
+    return newTask;
   }
   deleteTask(id: number): ITask {
     const taskIndex = this.tasks.findIndex((t) => t.id === +id);
@@ -27,12 +29,20 @@ export class TaskService {
     return deletedTask;
   }
 
-  updateTask(id: number, task: ITask): ITask {
+  updateTask(id: number, { title, text, tags, status }: CreateTaskDto) {
     const taskIndex = this.tasks.findIndex((t) => t.id === +id);
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
-    this.tasks[taskIndex] = task;
-    return task;
+
+    // this.tasks[taskIndex].title = title;
+    // return this.tasks[taskIndex];
+
+    const updatedTask = this.tasks[taskIndex];
+    updatedTask.title = title;
+    updatedTask.text = text;
+    updatedTask.tags = tags;
+    updatedTask.status = status;
+    return updatedTask;
   }
 }
