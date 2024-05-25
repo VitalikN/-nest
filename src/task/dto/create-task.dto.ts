@@ -1,5 +1,6 @@
 import {
   ArrayNotEmpty,
+  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -26,4 +27,8 @@ export class CreateTaskDto {
   @IsOptional()
   @IsEnum(Status, { message: 'не правильний status ' })
   status: Status;
+
+  @IsNotEmpty({ message: ' Email обов`язкове поле ' })
+  @IsEmail({}, { message: 'Email is not valid' })
+  email: string;
 }

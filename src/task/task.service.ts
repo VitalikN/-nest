@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ITask } from './task.interface';
 import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -13,22 +17,22 @@ export class TaskService {
   }
 
   getTaskById(id: number): ITask {
-    const task = this.tasks.find((t) => t.id === +id);
+    const task = this.tasks.find((t) => t.id === id);
     if (!task) {
       throw new NotFoundTaskException();
     }
     return task;
   }
 
-  createTask({ title, text, tags, status }: CreateTaskDto): ITask {
-    const newTask = new Task(title, text, tags, status);
+  createTask({ title, email, text, tags, status }: CreateTaskDto): ITask {
+    const newTask = new Task(title, email, text, tags, status);
     this.tasks.push(newTask);
 
     return newTask;
   }
 
   deleteTask(id: number): ITask {
-    const taskIndex = this.tasks.findIndex((t) => t.id === +id);
+    const taskIndex = this.tasks.findIndex((t) => t.id === id);
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
@@ -37,7 +41,7 @@ export class TaskService {
   }
 
   updateTask(id: number, { title, text, tags, status }: CreateTaskDto) {
-    const taskIndex = this.tasks.findIndex((t) => t.id === +id);
+    const taskIndex = this.tasks.findIndex((t) => t.id === id);
     if (taskIndex === -1) {
       throw new NotFoundException('Task not found');
     }
@@ -48,5 +52,14 @@ export class TaskService {
     updatedTask.tags = tags;
     updatedTask.status = status;
     return updatedTask;
+  }
+
+  getTasksByEmail(email: string): ITask[] {
+    const tasksEmail = this.tasks.filter((t) => t.email === email);
+
+    if (!tasksEmail || tasksEmail.length === 0) {
+      throw new BadRequestException('Task not found');
+    }
+    return tasksEmail;
   }
 }

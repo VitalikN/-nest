@@ -14,4 +14,5 @@ export interface ITask {
   tags: string[];
   createdAt: Date;
   updatedAt: Date;
+  email: string;
 }
